@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Readora — Read Book and Be Genius</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1a1a2e;
+      --paper: #faf8f3;
+      --cream: #f5f0e8;
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --teal: #2d7d8e;
+      --teal-light: #4a9faf;
+      --muted: #6b6560;
+      --border: #e2d9cc;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ─── NOISE TEXTURE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* ─── NAVBAR ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 4rem;
+      background: rgba(250, 248, 243, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .nav-logo-icon {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 28px;
+    }
+
+    .nav-logo-icon span {
+      display: block;
+      background: linear-gradient(180deg, var(--teal-light), var(--teal));
+      border-radius: 2px 2px 0 0;
+      width: 5px;
+    }
+    .nav-logo-icon span:nth-child(1) { height: 18px; background: linear-gradient(180deg, #8ab4be, var(--teal)); }
+    .nav-logo-icon span:nth-child(2) { height: 24px; }
+    .nav-logo-icon span:nth-child(3) { height: 20px; background: linear-gradient(180deg, #ccc, #999); }
+    .nav-logo-icon span:nth-child(4) { height: 26px; background: linear-gradient(180deg, var(--teal-light), var(--teal)); }
+    .nav-logo-icon span:nth-child(5) { height: 16px; background: linear-gradient(180deg, #e8d9b0, #c9b580); }
+
+    .nav-logo-text {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.5rem;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--ink); }
+
+    .nav-cta {
+      background: var(--ink);
+      color: var(--paper) !important;
+      padding: 0.55rem 1.4rem;
+      border-radius: 2rem;
+      transition: background 0.2s, transform 0.2s !important;
+    }
+
+    .nav-cta:hover {
+      background: var(--teal) !important;
+      transform: translateY(-1px);
+      color: white !important;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 8rem 4rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -20%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -10%;
+      left: 5%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(45,125,142,0.1) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .hero-text { position: relative; z-index: 2; }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--cream);
+      border: 1px solid var(--border);
+      padding: 0.4rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 2rem;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .hero-tag::before {
+      content: '●';
+      color: var(--gold);
+      font-size: 0.5rem;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 5vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--teal);
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 480px;
+      margin-bottom: 2.5rem;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+
+    .btn-primary {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 0.85rem 2rem;
+      border-radius: 3rem;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+      transition: all 0.25s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary:hover {
+      background: var(--teal);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(45,125,142,0.3);
+    }
+
+    .btn-secondary {
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .btn-secondary:hover { opacity: 1; }
+
+    .hero-stats {
+      display: flex;
+      gap: 2.5rem;
+      margin-top: 3.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--border);
+      animation: fadeUp 0.7s 0.4s ease both;
+    }
+
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      margin-top: 0.25rem;
+    }
+
+    /* ─── HERO VISUAL ─── */
+    .hero-visual {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: fadeLeft 0.9s 0.2s ease both;
+    }
+
+    .book-shelf {
+      width: 420px;
+      height: 380px;
+      background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .book-shelf::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 40px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent);
+    }
+
+    .shelf-header {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #ff5f57; }
+    .dot.y { background: #febc2e; }
+    .dot.g { background: #28c840; }
+
+    .shelf-title {
+      color: rgba(255,255,255,0.4);
+      font-size: 0.7rem;
+      margin-left: auto;
+      letter-spacing: 0.08em;
+    }
+
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+    }
+
+    .book-card {
+      border-radius: 6px;
+      height: 110px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .book-card:hover { transform: translateY(-4px); }
+
+    .book-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.5));
+    }
+
+    .book-card span {
+      position: relative;
+      z-index: 1;
+      font-size: 0.6rem;
+      color: white;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .bc1 { background: linear-gradient(135deg, #e8744a, #c0392b); }
+    .bc2 { background: linear-gradient(135deg, #3498db, #1a6bb5); }
+    .bc3 { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+    .bc4 { background: linear-gradient(135deg, #f39c12, #e67e22); }
+    .bc5 { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+    .bc6 { background: linear-gradient(135deg, #1abc9c, #16a085); }
+    .bc7 { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+    .bc8 { background: linear-gradient(135deg, #3498db, #2980b9); }
+
+    .shelf-footer {
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .sf-label { color: rgba(255,255,255,0.5); font-size: 0.72rem; }
+
+    .progress-bar {
+      flex: 1;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      margin: 0 0.75rem;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 65%;
+      background: linear-gradient(90deg, var(--teal), var(--gold));
+      border-radius: 2px;
+      animation: progress 2s 1s ease both;
+    }
+
+    .sf-pct { color: var(--gold-light); font-size: 0.72rem; font-weight: 500; }
+
+    .floating-badge {
+      position: absolute;
+      background: white;
+      border-radius: 12px;
+      padding: 0.6rem 0.9rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .badge-top {
+      top: -1.5rem;
+      right: -2rem;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .badge-bottom {
+      bottom: -1.5rem;
+      left: -2rem;
+      animation: float 3s 1.5s ease-in-out infinite;
+    }
+
+    .badge-icon { font-size: 1rem; }
+
+    /* ─── SECTION SHARED ─── */
+    section { padding: 6rem 4rem; }
+
+    .section-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.2rem;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 540px;
+      font-size: 1rem;
+    }
+
+    /* ─── CATEGORIES ─── */
+    .categories { background: var(--cream); }
+
+    .categories-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 3rem;
+    }
+
+    .view-all {
+      color: var(--teal);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: gap 0.2s;
+    }
+
+    .view-all:hover { gap: 0.6rem; }
+
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2rem;
+    }
+
+    .cat-card {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.8rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cat-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      transform: translate(30%, 30%);
+      transition: transform 0.3s;
+    }
+
+    .cat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.08); border-color: transparent; }
+    .cat-card:hover::before { transform: translate(20%, 20%) scale(1.2); }
+
+    .cat-card.c1::before { background: rgba(201,168,76,0.15); }
+    .cat-card.c2::before { background: rgba(45,125,142,0.12); }
+    .cat-card.c3::before { background: rgba(231,76,60,0.1); }
+    .cat-card.c4::before { background: rgba(155,89,182,0.1); }
+    .cat-card.c5::before { background: rgba(26,188,156,0.1); }
+    .cat-card.c6::before { background: rgba(243,156,18,0.1); }
+    .cat-card.c7::before { background: rgba(52,152,219,0.1); }
+    .cat-card.c8::before { background: rgba(46,204,113,0.1); }
+
+    .cat-emoji { font-size: 2rem; margin-bottom: 1rem; display: block; }
+
+    .cat-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+
+    .cat-count {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* ─── FEATURES ─── */
+    .features { background: var(--ink); color: var(--paper); }
+    .features h2 { color: var(--paper); }
+    .features .section-tag { color: var(--gold); }
+    .features .section-sub { color: rgba(250,248,243,0.5); }
+
+    .features-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .feature-list { display: flex; flex-direction: column; gap: 2rem; margin-top: 3rem; }
+
+    .feature-item {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 1.2rem;
+      align-items: start;
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: all 0.3s;
+      cursor: default;
+    }
+
+    .feature-item:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(201,168,76,0.3);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .fi1 { background: rgba(201,168,76,0.15); }
+    .fi2 { background: rgba(45,125,142,0.2); }
+    .fi3 { background: rgba(155,89,182,0.15); }
+    .fi4 { background: rgba(231,76,60,0.12); }
+
+    .feature-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .feature-desc { font-size: 0.88rem; color: rgba(250,248,243,0.5); line-height: 1.6; }
+
+    /* ─── PHONE MOCKUP ─── */
+    .phone-mockup {
+      display: flex;
+      justify-content: center;
+      position: relative;
+    }
+
+    .phone {
+      width: 240px;
+      height: 480px;
+      background: linear-gradient(145deg, #2a2a3e, #1a1a2e);
+      border-radius: 36px;
+      border: 2px solid rgba(255,255,255,0.1);
+      overflow: hidden;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03);
+      position: relative;
+      animation: phoneFloat 4s ease-in-out infinite;
+    }
+
+    .phone-notch {
+      width: 80px;
+      height: 20px;
+      background: #0a0a14;
+      border-radius: 0 0 12px 12px;
+      margin: 0 auto;
+    }
+
+    .phone-screen {
+      padding: 0.8rem;
+    }
+
+    .phone-greeting { color: rgba(255,255,255,0.5); font-size: 0.65rem; margin-bottom: 0.2rem; }
+    .phone-name { color: white; font-weight: 600; font-size: 0.85rem; margin-bottom: 1rem; }
+
+    .phone-card {
+      background: linear-gradient(135deg, var(--teal), #1a4d5a);
+      border-radius: 12px;
+      padding: 0.8rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .pc-label { color: rgba(255,255,255,0.6); font-size: 0.6rem; margin-bottom: 0.3rem; }
+    .pc-title { color: white; font-size: 0.72rem; font-weight: 600; margin-bottom: 0.5rem; font-family: 'Playfair Display', serif; }
+    .pc-bar-wrap { height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; }
+    .pc-bar { height: 100%; width: 65%; background: var(--gold-light); border-radius: 2px; }
+
+    .phone-section-title { color: rgba(255,255,255,0.5); font-size: 0.6rem; margin-bottom: 0.5rem; letter-spacing: 0.06em; }
+
+    .phone-books {
+      display: flex;
+      gap: 0.4rem;
+      overflow: hidden;
+    }
+
+    .pb {
+      width: 52px;
+      height: 70px;
+      border-radius: 5px;
+      flex-shrink: 0;
+    }
+
+    .pb1 { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+    .pb2 { background: linear-gradient(135deg, #3498db, #2980b9); }
+    .pb3 { background: linear-gradient(135deg, #f39c12, #e67e22); }
+    .pb4 { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+
+    /* ─── HOW IT WORKS ─── */
+    .how { background: var(--cream); }
+
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      margin-top: 4rem;
+      position: relative;
+    }
+
+    .how-grid::before {
+      content: '';
+      position: absolute;
+      top: 2rem;
+      left: calc(12.5%);
+      right: calc(12.5%);
+      height: 1px;
+      background: linear-gradient(90deg, var(--teal), var(--gold), var(--teal));
+      z-index: 0;
+    }
+
+    .how-step {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-num {
+      width: 4rem;
+      height: 4rem;
+      border-radius: 50%;
+      background: var(--paper);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--teal);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      transition: all 0.3s;
+    }
+
+    .how-step:hover .step-num {
+      background: var(--teal);
+      color: white;
+      border-color: var(--teal);
+      transform: scale(1.1);
+    }
+
+    .step-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+
+    .step-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+    /* ─── TESTIMONIALS ─── */
+    .testimonials { overflow: hidden; }
+
+    .testimonials-header { text-align: center; margin-bottom: 4rem; }
+    .testimonials-header .section-sub { margin: 0 auto; }
+
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .testi-card {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: all 0.3s;
+    }
+
+    .testi-card:hover {
+      box-shadow: 0 12px 32px rgba(0,0,0,0.07);
+      transform: translateY(-3px);
+    }
+
+    .testi-stars {
+      color: var(--gold);
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      letter-spacing: 0.1em;
+    }
+
+    .testi-quote {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+    }
+
+    .testi-author {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      color: white;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .av1 { background: linear-gradient(135deg, var(--teal), #1a4d5a); }
+    .av2 { background: linear-gradient(135deg, var(--gold), #a07830); }
+    .av3 { background: linear-gradient(135deg, #9b59b6, #6c3483); }
+
+    .author-name { font-size: 0.875rem; font-weight: 500; }
+    .author-role { font-size: 0.75rem; color: var(--muted); }
+
+    /* ─── CTA ─── */
+    .cta-section {
+      background: var(--ink);
+      text-align: center;
+      padding: 7rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(201,168,76,0.1) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .cta-section h2 { color: var(--paper); max-width: 600px; margin: 0 auto 1.5rem; }
+    .cta-section .section-tag { color: var(--gold); }
+    .cta-section p { color: rgba(250,248,243,0.5); max-width: 440px; margin: 0 auto 2.5rem; line-height: 1.7; }
+
+    .cta-btns {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: var(--ink);
+      padding: 0.9rem 2.2rem;
+      border-radius: 3rem;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.25s;
+    }
+
+    .btn-gold:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(201,168,76,0.35);
+    }
+
+    .btn-outline {
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.7);
+      padding: 0.9rem 2.2rem;
+      border-radius: 3rem;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.25s;
+    }
+
+    .btn-outline:hover {
+      border-color: rgba(255,255,255,0.5);
+      color: white;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: #0f0f1a;
+      color: rgba(250,248,243,0.4);
+      padding: 3rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+    }
+
+    .footer-logo {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.4rem;
+      color: rgba(250,248,243,0.7);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: rgba(250,248,243,0.4);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: rgba(250,248,243,0.8); }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeLeft {
+      from { opacity: 0; transform: translateX(40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes phoneFloat {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-12px) rotate(-2deg); }
+    }
+
+    @keyframes progress {
+      from { width: 0; }
+      to { width: 65%; }
+    }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 2rem; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 7rem 2rem 3rem; }
+      .hero-visual { display: none; }
+      section { padding: 4rem 2rem; }
+      .cat-grid { grid-template-columns: repeat(2, 1fr); }
+      .how-grid { grid-template-columns: repeat(2, 1fr); }
+      .how-grid::before { display: none; }
+      .features-layout { grid-template-columns: 1fr; }
+      .phone-mockup { display: none; }
+      .testi-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 1.5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <span class="nav-logo-text">Readora</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#categories">Explore</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#testimonials">Reviews</a></li>
+      <li><a href="#cta" class="nav-cta">Get Started</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <div class="hero-tag">Digital Library Platform</div>
+      <h1>Read Smarter,<br /><em>Grow Faster.</em></h1>
+      <p class="hero-sub">Readora brings thousands of books to your fingertips — organized, personalized, and built to help you build a daily reading habit that sticks.</p>
+      <div class="hero-actions">
+        <a href="#cta" class="btn-primary">Start Reading Free →</a>
+        <a href="#how" class="btn-secondary">▶ See how it works</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="stat-num">50K+</div>
+          <div class="stat-label">Books Available</div>
+        </div>
+        <div>
+          <div class="stat-num">12K+</div>
+          <div class="stat-label">Active Readers</div>
+        </div>
+        <div>
+          <div class="stat-num">98%</div>
+          <div class="stat-label">Satisfaction Rate</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="floating-badge badge-top">
+        <span class="badge-icon">🔥</span>
+        Trending this week
+      </div>
+
+      <div class="book-shelf">
+        <div class="shelf-header">
+          <span class="dot r"></span>
+          <span class="dot y"></span>
+          <span class="dot g"></span>
+          <span class="shelf-title">My Library</span>
+        </div>
+        <div class="books-grid">
+          <div class="book-card bc1"><span>Atomic Habits</span></div>
+          <div class="book-card bc2"><span>Deep Work</span></div>
+          <div class="book-card bc3"><span>Rich Dad</span></div>
+          <div class="book-card bc4"><span>Think Fast</span></div>
+          <div class="book-card bc5"><span>Influence</span></div>
+          <div class="book-card bc6"><span>Thinking Big</span></div>
+          <div class="book-card bc7"><span>Sapiens</span></div>
+          <div class="book-card bc8"><span>1984</span></div>
+        </div>
+        <div class="shelf-footer">
+          <span class="sf-label">Currently reading</span>
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+          <span class="sf-pct">65%</span>
+        </div>
+      </div>
+
+      <div class="floating-badge badge-bottom">
+        <span class="badge-icon">✅</span>
+        Daily streak: 14 days
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="categories" id="categories">
+    <div class="categories-header reveal">
+      <div>
+        <span class="section-tag">Browse by Category</span>
+        <h2>Find Your Next<br /><em>Great Read</em></h2>
+      </div>
+      <a href="#" class="view-all">View all categories →</a>
+    </div>
+    <div class="cat-grid">
+      <div class="cat-card c1 reveal">
+        <span class="cat-emoji">💼</span>
+        <div class="cat-name">Business</div>
+        <div class="cat-count">2,840 books</div>
+      </div>
+      <div class="cat-card c2 reveal">
+        <span class="cat-emoji">🌱</span>
+        <div class="cat-name">Self-Improvement</div>
+        <div class="cat-count">3,120 books</div>
+      </div>
+      <div class="cat-card c3 reveal">
+        <span class="cat-emoji">💰</span>
+        <div class="cat-name">Finance</div>
+        <div class="cat-count">1,650 books</div>
+      </div>
+      <div class="cat-card c4 reveal">
+        <span class="cat-emoji">📣</span>
+        <div class="cat-name">Marketing</div>
+        <div class="cat-count">980 books</div>
+      </div>
+      <div class="cat-card c5 reveal">
+        <span class="cat-emoji">📖</span>
+        <div class="cat-name">Fiction</div>
+        <div class="cat-count">5,200 books</div>
+      </div>
+      <div class="cat-card c6 reveal">
+        <span class="cat-emoji">🏛️</span>
+        <div class="cat-name">History</div>
+        <div class="cat-count">2,100 books</div>
+      </div>
+      <div class="cat-card c7 reveal">
+        <span class="cat-emoji">🔬</span>
+        <div class="cat-name">Science</div>
+        <div class="cat-count">1,870 books</div>
+      </div>
+      <div class="cat-card c8 reveal">
+        <span class="cat-emoji">🧠</span>
+        <div class="cat-name">Psychology</div>
+        <div class="cat-count">1,430 books</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="features-layout">
+      <div>
+        <span class="section-tag">Smart Features</span>
+        <h2>Built for Serious<br />Book Lovers</h2>
+        <p class="section-sub">Everything you need to read more, learn deeper, and track your growth — all in one beautifully designed platform.</p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <div class="feature-icon fi1">🎯</div>
+            <div>
+              <div class="feature-title">Personalized Recommendations</div>
+              <div class="feature-desc">AI-powered suggestions based on your reading history, goals, and favorite topics.</div>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon fi2">📊</div>
+            <div>
+              <div class="feature-title">Reading Progress Tracker</div>
+              <div class="feature-desc">Set reading goals, track pages, and visualize your daily streaks with beautiful charts.</div>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon fi3">📝</div>
+            <div>
+              <div class="feature-title">Highlights & Smart Notes</div>
+              <div class="feature-desc">Capture key insights, write notes, and get AI-generated chapter summaries.</div>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon fi4">📚</div>
+            <div>
+              <div class="feature-title">Personal Reading Lists</div>
+              <div class="feature-desc">Organize books into custom lists — Want to Read, Reading, Completed, and more.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-mockup">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-greeting">Good morning,</div>
+            <div class="phone-name">Readora User 👋</div>
+            <div class="phone-card">
+              <div class="pc-label">CONTINUE READING</div>
+              <div class="pc-title">Atomic Habits</div>
+              <div class="pc-bar-wrap"><div class="pc-bar"></div></div>
+            </div>
+            <div class="phone-section-title">RECOMMENDED FOR YOU</div>
+            <div class="phone-books">
+              <div class="pb pb1"></div>
+              <div class="pb pb2"></div>
+              <div class="pb pb3"></div>
+              <div class="pb pb4"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="how">
+    <div style="text-align:center;" class="reveal">
+      <span class="section-tag">Simple Process</span>
+      <h2>Start Reading in<br /><em>Minutes</em></h2>
+    </div>
+    <div class="how-grid">
+      <div class="how-step reveal">
+        <div class="step-num">01</div>
+        <div class="step-title">Create Your Account</div>
+        <p class="step-desc">Sign up for free in seconds. No credit card required to get started.</p>
+      </div>
+      <div class="how-step reveal">
+        <div class="step-num">02</div>
+        <div class="step-title">Choose Your Interests</div>
+        <p class="step-desc">Tell us what you love — business, fiction, science, history, and more.</p>
+      </div>
+      <div class="how-step reveal">
+        <div class="step-num">03</div>
+        <div class="step-title">Explore & Save Books</div>
+        <p class="step-desc">Browse our curated library and save books to your personal collection.</p>
+      </div>
+      <div class="how-step reveal">
+        <div class="step-num">04</div>
+        <div class="step-title">Read & Track Progress</div>
+        <p class="step-desc">Build your daily reading habit and watch your knowledge grow.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials" id="testimonials">
+    <div class="testimonials-header reveal">
+      <span class="section-tag">What Readers Say</span>
+      <h2>Loved by Book Lovers<br /><em>Everywhere</em></h2>
+      <p class="section-sub">Join thousands of readers who have transformed their reading habits with Readora.</p>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">"Readora completely changed the way I approach reading. The personalized recommendations are incredibly accurate — it always knows exactly what I want to read next."</p>
+        <div class="testi-author">
+          <div class="avatar av1">R</div>
+          <div>
+            <div class="author-name">Rahul M.</div>
+            <div class="author-role">Entrepreneur</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">"I've read more books in the past 2 months with Readora than I did all of last year. The streak feature keeps me motivated and the UI is just beautiful."</p>
+        <div class="testi-author">
+          <div class="avatar av2">S</div>
+          <div>
+            <div class="author-name">Sarah K.</div>
+            <div class="author-role">Product Designer</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">"The highlights and notes feature is a game-changer for learning. I actually retain so much more from every book I read now. Highly recommended!"</p>
+        <div class="testi-author">
+          <div class="avatar av3">A</div>
+          <div>
+            <div class="author-name">Ahmed T.</div>
+            <div class="author-role">Graduate Student</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section" id="cta">
+    <span class="section-tag">Join Readora</span>
+    <h2>Your Library, <em style="color:var(--gold-light);">Anywhere.</em></h2>
+    <p>Start your reading journey today. Free forever for essentials. Upgrade when you're ready for more.</p>
+    <div class="cta-btns">
+      <a href="#" class="btn-gold">Get Started — It's Free</a>
+      <a href="#" class="btn-outline">Browse the Library</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Readora</div>
+    <div style="font-size:0.78rem;">© 2026 Readora. Read Book and Be Genius.</div>
+    <ul class="footer-links">
+      <li><a href="#">Privacy</a></li>
+      <li><a href="#">Terms</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+      const nav = document.querySelector('nav');
+      nav.style.boxShadow = window.scrollY > 20
+        ? '0 4px 24px rgba(0,0,0,0.07)'
+        : 'none';
+    });
+  </script>
+</body>
+</html>
